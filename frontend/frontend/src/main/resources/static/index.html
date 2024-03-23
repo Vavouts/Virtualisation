@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Text Encoder</title>
+    <script>
+        function encodeText(encodingType) {
+            var text = document.getElementById("text").value;
+            var uri = "http://localhost:4000/encode"; // URI par défaut pour tous les encodages
+
+            if (encodingType !== 'all') {
+                uri = "/encode-" + encodingType; // Modifie l'URI pour les encodages spécifiques
+            }
+
+            fetch(`${uri}?text=${encodeURIComponent(text)}`)
+                .then(response => response.json())
+                .then(data => {
+                    displayResults(data);
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function displayResults(results) {
+            var resultArea = document.getElementById("result");
+            resultArea.innerHTML = ""; // Nettoyer les résultats précédents
+            var table = "<table><tr>";
+
+            // Ajouter les entêtes de colonne
+            for (var key in results.encoding) {
+                table += `<th>${key}</th>`;
+            }
+            table += "</tr><tr>";
+
+            // Ajouter les valeurs encodées
+            for (var key in results.encoding) {
+                table += `<td>${results.encoding[key]}</td>`;
+            }
+
+            table += "</tr></table>";
+            resultArea.innerHTML = table; // Afficher le tableau de résultats
+        }
+    </script>
+</head>
+<body>
+    <h2>Text Encoder</h2>
+    <input type="text" id="text" required>
+    <button onclick="encodeText('all')">Encode All</button>
+    <button onclick="encodeText('cesar')">Cesar</button>
+    <button onclick="encodeText('sha256')">SHA-256</button>
+    <button onclick="encodeText('base64')">Base64</button>
+    <button onclick="encodeText('md5')">MD5</button>
+    <div id="result"></div>
+</body>
+</html>
